@@ -1,9 +1,9 @@
 
-var app = require('express')();
-var http = require('http').createServer(app);
+var server = require('express')();
+var http = require('http').createServer(server);
 var io = require('socket.io')(http);
 
-app.get('/', function(req, res){
+server.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 
     io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' });
@@ -31,3 +31,5 @@ io.on('connection', function(socket){
 http.listen(3000, function(){
     console.log('listening on *:3000');
 });
+
+module.exports = http;
