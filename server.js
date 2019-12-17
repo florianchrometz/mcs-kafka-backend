@@ -9,9 +9,8 @@ var kafka = require('kafka-node'),
     Producer = kafka.Producer,
     Consumer = kafka.Consumer,
     client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'}),
-    producer = new Producer(client)
-    consumer = new Consumer(client, [{ topic: 'topicname', partition: 0 }], {autoCommit: false}
-);
+    producer = new Producer(client);
+
 
 
 
@@ -36,9 +35,16 @@ server.get('/producer', function(req, res){
 
 });
 
-consumer.on('message', function (message) {
-    console.log(message);
+server.get('/consumer', function(req, res){
+
+
+    var consumer = new Consumer(client, [{ topic: 'topicname', partition: 0 }], {autoCommit: false});
+    consumer.on('message', function (message) {
+        console.log(message);
+    });
 });
+
+
 
 
 
