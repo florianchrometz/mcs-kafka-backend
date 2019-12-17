@@ -10,15 +10,19 @@ server.get('/', function(req, res){
 
 });
 
+var kafka = require('kafka-node'),
+    Consumer = kafka.Consumer,
+    Producer = kafka.Producer,
+    client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
+
+
 server.get('/producer', function(req, res){
 
-    var kafka = require('kafka-node'),
-        Producer = kafka.Producer,
-        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'}),
-        producer = new Producer(client);
+
+    var producer = new Producer(client);
 
     producer.on('ready', function () {
-        producer.send([{ topic: 'topicname', messages: ['init topic'] }], function (err, data) {
+        producer.send([{ topic: 'chat', messages: ['init topic'] }], function (err, data) {
             console.log("producer data: ", data);
         });
     });
@@ -31,11 +35,8 @@ server.get('/producer', function(req, res){
 
 server.get('/consumer', function(req, res){
 
-    var kafka = require('kafka-node'),
-        Consumer = kafka.Consumer,
-        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'})
 
-    var consumer = new Consumer(client, [{ topic: 'topicname', partition: 0 }], {autoCommit: false});
+    var consumer = new Consumer(client, [{ topic: 'chat', partition: 0 }], {autoCommit: true});
     consumer.on('message', function (message) {
         console.log("consumer message: ", message);
     });
