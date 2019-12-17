@@ -22,7 +22,7 @@ server.get('/producer', function(req, res){
     var producer = new Producer(client);
 
     producer.on('ready', function () {
-        producer.send([{ topic: 'chat', messages: ['init topic'] }], function (err, data) {
+        producer.send([{ topic: 'chat', messages: 'init chat', partition: 0 }], function (err, data) {
             console.log("producer data: ", data);
         });
     });
@@ -40,6 +40,10 @@ server.get('/consumer', function(req, res){
     consumer.on('message', function (message) {
         console.log("consumer message: ", message);
     });
+
+    consumer.on('error', function (err) {
+        console.log("consumer error: ", err);
+    })
 
 });
 
