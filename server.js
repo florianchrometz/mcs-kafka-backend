@@ -5,13 +5,6 @@ var io = require('socket.io')(http);
 
 
 
-var kafka = require('kafka-node'),
-    Producer = kafka.Producer,
-    Consumer = kafka.Consumer,
-    client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'}),
-    producer = new Producer(client);
-
-
 
 
 server.get('/', function(req, res){
@@ -21,6 +14,12 @@ server.get('/', function(req, res){
 });
 
 server.get('/producer', function(req, res){
+
+    var kafka = require('kafka-node'),
+        Producer = kafka.Producer,
+        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'}),
+        producer = new Producer(client);
+
 
 
     producer.on('ready', function () {
@@ -37,6 +36,9 @@ server.get('/producer', function(req, res){
 
 server.get('/consumer', function(req, res){
 
+    var kafka = require('kafka-node'),
+        Consumer = kafka.Consumer,
+        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'})
 
     var consumer = new Consumer(client, [{ topic: 'topicname', partition: 0 }], {autoCommit: false});
     consumer.on('message', function (message) {
