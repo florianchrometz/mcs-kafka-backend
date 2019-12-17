@@ -43,8 +43,19 @@ server.get('/producer', function(req, res){
 
 });
 
-
 var consumer = new Consumer(client, [{ topic: 'chat', partition: 0 }], {autoCommit: true});
+
+
+server.get('/consumer', function(req, res){
+
+
+    consumer = new Consumer(client, [{ topic: 'chat', partition: 0 }], {autoCommit: true});
+
+
+
+});
+
+
 
 consumer.on('message', function (message) {
     console.log("consumer message: ", message);
