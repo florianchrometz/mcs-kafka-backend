@@ -10,13 +10,13 @@ server.get('/', function(req, res){
 
 });
 
-var kafka = require('kafka-node'),
-    Consumer = kafka.Consumer,
-    Producer = kafka.Producer,
-    client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
-
 
 server.get('/producer', function(req, res){
+
+    var kafka = require('kafka-node'),
+        Consumer = kafka.Consumer,
+        Producer = kafka.Producer,
+        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
 
 
     var producer = new Producer(client);
@@ -34,6 +34,10 @@ server.get('/producer', function(req, res){
 });
 
 server.get('/consumer', function(req, res){
+    var kafka = require('kafka-node'),
+        Consumer = kafka.Consumer,
+        Producer = kafka.Producer,
+        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
 
 
     var consumer = new Consumer(client, [{ topic: 'chat', partition: 0 }], {autoCommit: true});
