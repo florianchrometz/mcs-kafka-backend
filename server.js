@@ -27,15 +27,14 @@ server.get('/', function(req, res){
 
 server.get('/producer', function(req, res){
 
-    producer.on('ready', function () {
-        producer.send([{
-            topic: 'chat',
-            messages: ['message body'], // multi messages should be a array, single message can be just a string,
-            attributes: 1,
-            timestamp: Date.now() // <-- defaults to Date.now() (only available with kafka v0.10 and KafkaClient only)
-        }], function (err, data) {
-            console.log("producer data: ", data);
-        });
+
+    producer.send([{
+        topic: 'chat',
+        messages: ['message body'], // multi messages should be a array, single message can be just a string,
+        attributes: 1,
+        timestamp: Date.now() // <-- defaults to Date.now() (only available with kafka v0.10 and KafkaClient only)
+    }], function (err, data) {
+        console.log("producer data: ", data);
     });
 
     producer.on('error', function (err) {
