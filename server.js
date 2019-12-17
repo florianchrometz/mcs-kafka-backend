@@ -3,6 +3,21 @@ var server = require('express')();
 var http = require('http').createServer(server);
 var io = require('socket.io')(http);
 
+
+var kafka = require('kafka-node'),
+    client = new kafka.KafkaClient(
+        {
+            idleConnection: 24 * 60 * 60 * 1000,
+            autoConnect: true,
+            reconnectOnIdle: true,
+            kafkaHost: 'kafka:9092'
+        });
+var Consumer = kafka.Consumer;
+var HighLevelProducer = kafka.HighLevelProducer
+var producer = new HighLevelProducer(client);
+
+
+
 server.get('/', function(req, res){
 
     res.sendFile(__dirname + '/index.html');
@@ -10,15 +25,7 @@ server.get('/', function(req, res){
 
 });
 
-
 server.get('/producer', function(req, res){
-
-    var kafka = require('kafka-node'),
-        HighLevelProducer = kafka.HighLevelProducer,
-        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
-
-
-    var producer = new HighLevelProducer(client);
 
     producer.on('ready', function () {
         producer.send([{
@@ -37,22 +44,18 @@ server.get('/producer', function(req, res){
 
 });
 
-server.get('/consumer', function(req, res){
-    var kafka = require('kafka-node'),
-        Consumer = kafka.Consumer,
-        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
 
+var consumer = new Consumer(client, [{ topic: 'chat', partition: 0 }], {autoCommit: true});
 
-    var consumer = new Consumer(client, [{ topic: 'chat', partition: 0 }], {autoCommit: true});
-    consumer.on('message', function (message) {
-        console.log("consumer message: ", message);
-    });
-
-    consumer.on('error', function (err) {
-        console.log("consumer error: ", err);
-    })
-
+consumer.on('message', function (message) {
+    console.log("consumer message: ", message);
 });
+
+consumer.on('error', function (err) {
+    console.log("consumer error: ", err);
+});
+
+
 
 
 io.on('connection', function(socket){
