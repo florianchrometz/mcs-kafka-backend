@@ -59,7 +59,7 @@ server.get('/consumer', function(req, res){
 
 consumer.on('message', function (message) {
     console.log("consumer message.value: ", message.value);
-    io.emit('chat message', message.value + "     ## g" + JSON.stringify(message) );
+    io.emit('chat message', message.value + " - - - " + JSON.stringify(message) );
 });
 
 consumer.on('error', function (err) {
