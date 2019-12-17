@@ -58,7 +58,8 @@ server.get('/consumer', function(req, res){
 
 
 consumer.on('message', function (message) {
-    console.log("consumer message: ", message);
+    console.log("consumer message.value: ", message.value);
+    io.emit('chat message', message);
 });
 
 consumer.on('error', function (err) {
@@ -75,8 +76,22 @@ io.on('connection', function(socket){
     });
 
     socket.on('chat message', function(msg){
-        io.emit('chat message', msg);
+        //io.emit('chat message', msg);
         console.log('message: ' + msg);
+
+
+        producer.send([{
+            topic: 'chat',
+            messages: [msg], // multi messages should be a array, single message can be just a string,
+            attributes: 1,
+            timestamp: Date.now() // <-- defaults to Date.now() (only available with kafka v0.10 and KafkaClient only)
+        }], function (err, data) {
+            console.log("producer data: ", data);
+        });
+
+        producer.on('error', function (err) {
+            console.log("producer error: ", err);
+        })
     });
 
 });
