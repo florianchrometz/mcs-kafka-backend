@@ -14,15 +14,19 @@ server.get('/', function(req, res){
 server.get('/producer', function(req, res){
 
     var kafka = require('kafka-node'),
-        Consumer = kafka.Consumer,
-        Producer = kafka.Producer,
+        HighLevelProducer = kafka.HighLevelProducer,
         client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
 
 
-    var producer = new Producer(client);
+    var producer = new HighLevelProducer(client);
 
     producer.on('ready', function () {
-        producer.send([{ topic: 'chat', messages: 'init chat', partition: 0 }], function (err, data) {
+        producer.send([{
+            topic: 'chat',
+            messages: ['message body'], // multi messages should be a array, single message can be just a string,
+            attributes: 1,
+            timestamp: Date.now() // <-- defaults to Date.now() (only available with kafka v0.10 and KafkaClient only)
+        }], function (err, data) {
             console.log("producer data: ", data);
         });
     });
@@ -36,7 +40,6 @@ server.get('/producer', function(req, res){
 server.get('/consumer', function(req, res){
     var kafka = require('kafka-node'),
         Consumer = kafka.Consumer,
-        Producer = kafka.Producer,
         client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'});
 
 
