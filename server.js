@@ -3,6 +3,18 @@ var server = require('express')();
 var http = require('http').createServer(server);
 var io = require('socket.io')(http);
 
+
+
+var kafka = require('kafka-node'),
+    Producer = kafka.Producer,
+    Consumer = kafka.Consumer,
+    client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'}),
+    producer = new Producer(client)
+    consumer = new Consumer(client, [{ topic: 'topicname', partition: 0 }], {autoCommit: false}
+);
+
+
+
 server.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 
@@ -11,25 +23,24 @@ server.get('/', function(req, res){
 
 server.get('/producer', function(req, res){
 
-    var kafka = require('kafka-node'),
-        Producer = kafka.Producer,
-        KeyedMessage = kafka.KeyedMessage,
-        client = new kafka.KafkaClient({kafkaHost: 'kafka:9092'}),
-        producer = new Producer(client),
-        km = new KeyedMessage('key', 'message'),
-        payloads = [
-            { topic: 'topic1', messages: 'hi', partition: 0 },
-            { topic: 'topic2', messages: ['hello', 'world', km] }
-        ];
+
     producer.on('ready', function () {
-        producer.send(payloads, function (err, data) {
+        producer.send([{ topic: 'topicname', messages: ['hello', 'world'] }], function (err, data) {
             console.log(data);
         });
     });
 
-    producer.on('error', function (err) {})
+    producer.on('error', function (err) {
+        console.log(err)
+    })
 
 });
+
+consumer.on('message', function (message) {
+    console.log(message);
+});
+
+
 
 
 
